@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog.apps.BlogConfig',
     'pages.apps.PagesConfig',
+    'django_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -53,11 +54,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'blogicum.urls'
 
+TEMPLATES_DIR = BASE_DIR / "templates"
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'templates',
+            TEMPLATES_DIR,
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -70,6 +74,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'blogicum.wsgi.application'
 
@@ -124,10 +129,22 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'staticfiles',
+    BASE_DIR / 'static_dev',
 ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+LOGIN_REDIRECT_URL = "blog:index"
+LOGOUT_REDIRECT_URL = "blog:index"
+LOGIN_URL = 'login'
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"

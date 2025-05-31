@@ -34,6 +34,9 @@ class Post(WithCreatedAtAndPublished):
                                  null=True,
                                  verbose_name='Категория',
                                  related_name='posts')
+    image = models.ImageField(upload_to='images/',
+                              blank=True,
+                              verbose_name='Изображение')
 
     class Meta:
         verbose_name_plural = 'Публикации'
@@ -69,3 +72,20 @@ class Location(WithCreatedAtAndPublished):
 
     def __str__(self):
         return self.name
+
+
+class Comment(models.Model):
+    text = models.TextField(verbose_name="Текст комментария")
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name="comments",
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("created_at",)

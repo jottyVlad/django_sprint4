@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Post, Category, Location
+from .models import Post, Category, Location, Comment
 
 
 @admin.register(Location)
@@ -19,3 +19,6 @@ class PostAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     class Meta:
         model = Category
+
+
+admin.site.register(Comment)
