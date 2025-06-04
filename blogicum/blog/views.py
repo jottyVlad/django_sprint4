@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Count, QuerySet
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
@@ -21,15 +21,22 @@ def check_post_published(post: Post, user: User):
         raise Http404
 
 
+def get_annotated_posts(posts: QuerySet[Post]) -> QuerySet[Post]:
+    return posts.annotate(comment_count=Count('comments'))
+
+
+def get_published_posts() -> QuerySet[Post]:
+    return Post.objects.filter(is_published=True,
+                               pub_date__lte=timezone.now(),
+                               category__is_published=True)
+
 def index(request):
-    posts = (Post.objects.filter(is_published=True,
-                                 pub_date__lte=timezone.now(),
-                                 category__is_published=True)
+    posts = (get_published_posts()
              .select_related('category')
              .select_related('author')
              .select_related('location'))
 
-    posts = posts.annotate(comment_count=Count('comments'))
+    posts = get_annotated_posts(posts).order_by('-pub_date')
 
     page_obj = paginate(posts, request)
     return render(request,
@@ -184,7 +191,7 @@ def get_profile_or_404(request, username):
                                      pub_date__lte=timezone.now(),
                                      category__is_published=True)
 
-    posts = posts.annotate(comment_count=Count("comments"))
+    posts = get_annotated_posts(posts).order_by('-pub_date')
     page = paginate(posts, request)
 
     ctx = {
